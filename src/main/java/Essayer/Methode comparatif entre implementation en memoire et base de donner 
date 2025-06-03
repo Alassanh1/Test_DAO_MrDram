@@ -1,0 +1,182 @@
+// === 1. Implémentation en mémoire ===
+package dao;
+
+import beans.Membre;
+import java.util.*;
+
+public class MembreServiceMemoire {
+
+    private List<Membre> membres;
+
+    public MembreServiceMemoire() {
+        membres = new ArrayList<>();
+    }
+
+    public boolean create(Membre o) {
+        return membres.add(o);
+    }
+
+    public boolean delete(Membre o) {
+        return membres.remove(o);
+    }
+
+    public boolean update(Membre o) {
+        for (Membre m : membres) {
+            if (m.getIdentifiant() == o.getIdentifiant()) {
+                m.setNom(o.getNom());
+                m.setPrennom(o.getPrennom());
+                m.setSexe(o.getSexe());
+                m.setProfession(o.getProfession());
+                m.setEmail(o.getEmail());
+                m.setDateAdhesion(o.getDateAdhesion());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Membre findById(int id) {
+        for (Membre m : membres) {
+            if (m.getIdentifiant() == id)
+                return m;
+        }
+        return null;
+    }
+
+    public List<Membre> findAll() {
+        return membres;
+    }
+}
+
+// === 2. Implémentation JDBC (base de données) ===
+package dao;
+
+import beans.Membre;
+import java.sql.*;
+import java.util.*;
+
+public class MembreServiceDB {
+
+    public boolean create(Membre m) {
+        String sql = "INSERT INTO membre (nom, prennom, sexe, profession, email, dateAdhesion) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, m.getNom());
+            ps.setString(2, m.getPrennom());
+            ps.setString(3, m.getSexe());
+            ps.setString(4, m.getProfession());
+            ps.setString(5, m.getEmail());
+            ps.setDate(6, m.getDateAdhesion());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Erreur create: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean delete(Membre m) {
+        String sql = "DELETE FROM membre WHERE id = ?";
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, m.getIdentifiant());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Erreur delete: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean update(Membre m) {
+        String sql = "UPDATE membre SET nom=?, prennom=?, sexe=?, profession=?, email=?, dateAdhesion=? WHERE id=?";
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, m.getNom());
+            ps.setString(2, m.getPrennom());
+            ps.setString(3, m.getSexe());
+            ps.setString(4, m.getProfession());
+            ps.setString(5, m.getEmail());
+            ps.setDate(6, m.getDateAdhesion());
+            ps.setInt(7, m.getIdentifiant());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Erreur update: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Membre findById(int id) {
+        String sql = "SELECT * FROM membre WHERE id = ?";
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Membre(
+                    rs.getInt("id"),
+                    rs.getString("nom"),
+                    rs.getString("prennom"),
+                    rs.getString("sexe"),
+                    rs.getString("profession"),
+                    rs.getString("email"),
+                    rs.getDate("dateAdhesion")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur findById: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<Membre> findAll() {
+        List<Membre> liste = new ArrayList<>();
+        String sql = "SELECT * FROM membre";
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Membre m = new Membre(
+                    rs.getInt("id"),
+                    rs.getString("nom"),
+                    rs.getString("prennom"),
+                    rs.getString("sexe"),
+                    rs.getString("profession"),
+                    rs.getString("email"),
+                    rs.getDate("dateAdhesion")
+                );
+                liste.add(m);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur findAll: " + e.getMessage());
+        }
+        return liste;
+    }
+}
+
+
+
+// === 3. Exemple de test dynamique (mode mémoire ou BDD) ===
+package test;
+
+import dao.MembreServiceMemoire;
+import dao.MembreServiceDB;
+import beans.Membre;
+
+import java.sql.Date;
+import java.util.List;
+
+public class TestService {
+    public static void main(String[] args) {
+        boolean useDB = true; // changez en false pour tester la version mémoire
+
+        var service = useDB ? new MembreServiceDB() : new MembreServiceMemoire();
+
+        Membre membre = new Membre("Diop", "Alioune", "Homme", "Enseignant", "alioune@uasz.sn", Date.valueOf("2023-05-01"));
+        service.create(membre);
+
+        List<Membre> membres = service.findAll();
+        for (Membre m : membres) {
+            System.out.println(m.getNom() + " " + m.getPrennom());
+        }
+    }
+}
+
