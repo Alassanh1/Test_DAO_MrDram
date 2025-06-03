@@ -3,8 +3,6 @@ package Essayer;
 import java.util.ArrayList;
 import java.util.List;
 
-import Essayer.Membre;
-
 public class MembreDao implements IDao<Membre> {
 	
 	private List<Membre> membres;

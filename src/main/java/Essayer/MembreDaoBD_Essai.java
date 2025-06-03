@@ -54,23 +54,23 @@ public class MembreDaoBD_Essai implements IDao<Membre> {
 
 	 @Override
 	    public Membre findById(int id) {
-	        String sql = "SELECT * FROM membre WHERE id = ?";
-	        try (PreparedStatement ps = Connexion.getCo().prepareStatement(sql)) {
-	            ps.setInt(1, id);
-	            ResultSet rs = ps.executeQuery();
-	            if (rs.next()) {
-	                return new Membre(
-	                    rs.getInt("id"),
-	                    rs.getString("prenom"),
-	                    rs.getString("nom"),
-	                    rs.getInt("age"),
-	                    rs.getString("profession"),
-	                    rs.getString("sexe")
-	                );
-	            }
-	        } catch (SQLException ex) {
-	            System.out.println("Erreur findById SQL: " + ex.getMessage());
-	        }
+	     String sql = "SELECT * FROM membre WHERE id = ?" ;
+	     try(PreparedStatement ps = Connexion.getCo().prepareStatement(sql)){
+	    	 ps.setInt(1, id);
+	    	 ResultSet rs = ps.executeQuery();
+	    	 if (rs.next()) {
+	    		 return new Membre(  				
+	    				 rs.getInt("id"),
+	    				 rs.getString("Prenom"),
+	    				 rs.getString("nom"),
+	    				 rs.getInt("age"),
+	    				 rs.getString("profession"),
+	    				 rs.getString("age")
+	    				 );
+	    	 }
+	     }catch (SQLException ex) {
+	    	 System.out.println("Erreur FindbyId SQl : "+ex.getMessage());
+	     }
 	        return null;
 	    }
 
