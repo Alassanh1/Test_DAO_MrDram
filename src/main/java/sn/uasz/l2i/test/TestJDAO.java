@@ -2,7 +2,7 @@ package sn.uasz.l2i.test;
 
 import java.util.Scanner;
 
-import sn.uasz.l2i.tp3.models.MembreService;
+//import sn.uasz.l2i.tp3.models.MembreService;
 import sn.uasz.l2i.tp3.models.MembreServiceDB;
 import sn.uasz.l2i.tp3.beans.Membre;
 
