@@ -1,9 +1,5 @@
 <<<<<<< HEAD
 Methode comparatif entre implementation en memoire et base de donnerr
-
-
-=======
->>>>>>> 0230d350f3e1fc6fb942a1ed2d73c9891c3d6a85
 // === 1. Implémentation en mémoire ===
 package dao;
 
