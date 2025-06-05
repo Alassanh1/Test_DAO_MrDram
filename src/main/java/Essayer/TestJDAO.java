@@ -4,13 +4,11 @@ package Essayer;
 import java.util.Scanner;
 
 //import sn.uasz.l2i.tp3.models.MembreService;
-import sn.uasz.l2i.tp3.models.MembreServiceDB;
-import sn.uasz.l2i.tp3.beans.Membre;
 
 public class TestJDAO {
 
 	public static void main(String[] args) {
-		MembreServiceDB service = new MembreServiceDB();
+		MembreDaoBD service = new MembreDaoBD();
 		 
 		service.create(new Membre(1, "Modou", "SALL", 45, "Enseignant", "M"));
 		service.create(new Membre(2, "Fatou", "NDIAYE", 35, "Enseignante", "F"));
